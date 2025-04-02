@@ -1,0 +1,10 @@
+﻿@model int
+@if (User.IsInRole("Admin"))
+{
+    <td><a class="btn btn-warning" asp-action="DetailsVM" asp-route-id="@Model"><i class="fas fa-eye"></i> Details</a></td>
+}
+@if (User.IsInRole("HR") || User.IsInRole("Admin"))
+{
+    <td><a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model"><i class="fas fa-edit"></i> Edit</a></td>
+    <td><a class="btn btn-danger" onclick="return confirm('Do you really want to delete this User?');" asp-action="Delete" asp-route-id="@Model"><i class="fas fa-trash"></i> Delete</a></td>
+}

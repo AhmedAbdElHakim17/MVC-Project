@@ -1,0 +1,181 @@
+﻿@model List<StudentViewModel>
+@{
+    ViewData["Title"] = "Students";
+    Layout = "_WebLayout";
+}
+
+<style>
+    .custom-table {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+        /* Header Styling */
+        .custom-table thead th {
+            background: #198754;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            text-transform: uppercase;
+        }
+
+        /* Row Hover Effect */
+        .custom-table tbody tr:hover {
+            background: rgba(0, 123, 255, 0.15);
+            transition: 0.3s ease-in-out;
+        }
+
+        /* Alternating Row Colors */
+        .custom-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .custom-table tbody tr:nth-child(odd) {
+            background: #e9ecef;
+        }
+
+    /* Button Styling */
+
+
+</style>
+<div class="text-center text-success fw-bold mb-4 mt-4">
+    <h2>
+        <i class="fas fa-users"></i> Students
+    </h2>
+</div>
+<div class="container">
+    <div class="table-responsive shadow-lg rounded">
+        <table class="custom-table table table-bordered table-hover text-center align-middle m-0" style="background: white; border-radius: 10px;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Address</th>
+                    <th>Department</th>
+                    <th>Image</th>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <th>Details</th>
+                    }
+                    @if (User.IsInRole("Admin") || User.IsInRole("HR"))
+                    {
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var student in Model)
+                {
+                    <tr class="fw-semibold">
+                        <td>@student.Name</td>
+                        <td>@student.Age</td>
+                        <td>@student.Address</td>
+                        <td>@student.DeptName</td>
+                        <td><img style="width:80px; border-radius: 8px;" src="/images/@student.ImgUrl" /></td>
+                        <partial name="_SharedButtons" model="student.Id" />
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        @if (!User.IsInRole("HR"))
+        {
+            <div class="text-center mt-3">
+                <a class="btn btn-success btn-lg shadow fw-bold" asp-action="Add">
+                    <i class="fas fa-user-plus"></i> New Student
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    function GetStudents() {
+        var deptId = document.getElementById("DeptId").value;
+        var DeptStudents = document.getElementById("Students");
+        DeptStudents.innerHTML = "";
+
+        $.ajax({
+            url: `/Student/GetStudentsByDeptId?deptId=${deptId}`,
+            success: function(result) {
+                console.log(result);
+                for (let std of result) {
+                    DeptStudents.innerHTML += `<option value=${std.id}>${std.name}</option>`;
+                }
+            }
+        });
+    }
+</script>
+@* @model List<StudentViewModel> *@
+@* @{ *@
+@*     ViewData["Title"] = "Students"; *@
+@*     Layout = "_WebLayout"; *@
+@*     // SelectList selectListItems = new SelectList(Model.Departments, "Id", "Name"); *@
+@* } *@
+@* <style> *@
+@*     td, th { *@
+@*         text-align: center; *@
+@*         vertical-align: middle; *@
+@*     } *@
+@* </style> *@
+@* @* <label for="DeptId">DepartmentsList</label> *@ 
+@* @* <select id="DeptId" name="DeptId" class="form form-control" onchange="GetStudents()"> *@
+@* @*     @foreach (var Dept in ViewBag.Departments) 
+@* @*     { *@ 
+@* @*         <option value="@Dept.Id">@Dept.Name</option> *@ 
+@* @*     } *@ 
+@* @* </select> *@
+@* @* <br /> *@
+@* @* <label for="Students">StudentsList</label> *@ 
+@* @* <select id="Students" name="Students" class="form form-control"></select> *@
+@* <table class="table table-bordered table-hover"> *@
+@*     <tr> *@
+@*         <th>Name</th> *@
+@*         <th>Age</th> *@
+@*         <th>Address</th> *@
+@*         <th>Department</th> *@
+@*         <th>Image</th> *@
+@*         @if (!User.IsInRole("HR")) *@
+@*         { *@
+@*             <th>Details</th> *@
+@*         } *@
+@*         @if (!User.IsInRole("Admin")) *@
+@*         { *@
+@*             <th>Edit</th> *@
+@*         } *@
+@*         <th>Delete</th> *@
+@*     </tr> *@
+@*     @foreach (var student in Model) *@
+@*     { *@
+@*         <tr> *@
+@*             <td>@student.Name</td> *@
+@*             <td>@student.Age</td> *@
+@*             <td>@student.Address</td> *@
+@*             <td>@student.DeptName</td> *@
+@*             <td><img style="width:80px" src="/images/@student.ImgUrl" /></td> *@
+@*             <partial name="_SharedButtons" model="student.Id" /> *@
+@*         </tr> *@
+@*     } *@
+@* </table> *@
+@* @if (!User.IsInRole("HR")) *@
+@* { *@
+@*     <a class="btn btn-success" asp-action="Add">NEW</a> *@
+@* } *@
+@* <script src="/lib/jquery/dist/jquery.min.js"></script> *@
+@* <script> *@
+@*     function GetStudents(){ *@
+@*         var deptId = document.getElementById("DeptId").value; *@
+@*         var DeptStudents = document.getElementById("Students"); *@
+@*         DeptStudents.innerHTML=""; *@
+@*       $.ajax({url: `/Student/GetStudentsByDeptId?deptId=${deptId}` *@
+@*       , success: function(result){ *@
+@*           console.log(result); *@
+@*           for(let std of result){ *@
+@*               DeptStudents.innerHTML += `<option value=${std.id}>${std.name}</option>`; *@
+@*           } *@
+@*       }}); *@
+@*     }; *@
+@* </script> *@

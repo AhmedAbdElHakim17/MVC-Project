@@ -1,0 +1,90 @@
+﻿@model List<CourseViewModel>
+@{
+    ViewData["Title"] = "Courses";
+    Layout = "_WebLayout";
+}
+
+<style>
+    .custom-table {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+        /* Header Styling */
+        .custom-table thead th {
+            background: #0dcaf0;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            text-transform: uppercase;
+        }
+
+        /* Row Hover Effect */
+        .custom-table tbody tr:hover {
+            background: rgba(0, 123, 255, 0.15);
+            transition: 0.3s ease-in-out;
+        }
+
+        /* Alternating Row Colors */
+        .custom-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .custom-table tbody tr:nth-child(odd) {
+            background: #e9ecef;
+        }
+
+    /* Button Styling */
+
+
+</style>
+
+<div class="container mt-4">
+    <h2 class="text-center fw-bold mb-4 text-info">
+        <i class="fas fa-book-open"></i> Courses
+    </h2>
+    <table class="table table-bordered table-hover custom-table text-center">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Topic</th>
+                <th>Min Degree</th>
+                <th>Total Degree</th>
+                <th>Instructor Name</th>
+                @if (User.IsInRole("Admin"))
+                {
+                    @if (User.IsInRole("Admin") || User.IsInRole("Instructor"))
+                    {
+                        <th>Details</th>
+                    }
+                     <th>Edit</th>  
+                    <th>Delete</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var course in Model)
+            {
+                <tr>
+                    <td>@course.Name</td>
+                    <td>@course.Topic</td>
+                    <td>@course.minDeg</td>
+                    <td>@course.TotalDeg</td>
+                    <td>@course.InsName</td>
+                    <partial name="_SharedButtons" model="course.Id" />
+
+                </tr>
+            }
+        </tbody>
+    </table>
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="text-center mt-3">
+            <a class="btn btn-success btn-lg shadow fw-bold" asp-action="Add">
+                <i class="fas fa-book-medical"></i> New Course
+            </a>
+        </div>
+    }
+
+

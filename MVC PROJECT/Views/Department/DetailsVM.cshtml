@@ -1,0 +1,13 @@
+﻿@model DepartmentViewModel
+@{
+    ViewData["Title"] = "Department Details";
+}
+
+<h1>Department Details</h1>
+<label asp-for="Name"></label>
+<input asp-for="Name" class="form-control" readonly />
+<label asp-for="Description"></label>
+<textarea asp-for="Description" class="form-control" rows="2" readonly></textarea>
+<label asp-for="Location"></label>
+<input asp-for="Location" class="form-control" readonly />
+<a asp-action="Index" asp-controller="Department" class="btn btn-warning" style="margin-top:10px">Back To Index</a>

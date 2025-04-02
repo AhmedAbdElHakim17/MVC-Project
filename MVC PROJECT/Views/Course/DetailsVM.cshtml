@@ -1,0 +1,106 @@
+﻿@model CourseViewModel
+@{
+    ViewData["Title"] = "Course Details";
+    SelectList selectListItems = new SelectList(Model.insList, "Id", "fullName");
+}
+
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 600px; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+
+        <!-- Header -->
+        <div class="card-header text-center text-white py-3 rounded-top shadow"
+             style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+            <h2 class="fw-bold"><i class="fas fa-book"></i> Course Details</h2>
+        </div>
+
+        <!-- Form Start -->
+        <form asp-action="Edit" asp-controller="Course" method="post">
+            <input type="hidden" asp-for="Id" /> <!-- Hidden ID for tracking -->
+
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-book-open"></i> Course Name</label>
+                    <input asp-for="Name" class="form-control fw-semibold" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-list"></i> Topic</label>
+                    <input asp-for="Topic" class="form-control fw-semibold" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-percentage"></i> Total Degree</label>
+                    <input asp-for="TotalDeg" type="number" class="form-control fw-semibold" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-arrow-down"></i> Minimum Degree</label>
+                    <input asp-for="minDeg" type="number" class="form-control fw-semibold" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-user-tie"></i> Instructor Name</label>
+                    <select asp-for="InsID"
+                            asp-items="selectListItems"
+                            class="form-control fw-semibold" id="insSelect" disabled>
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <div class="text-center mt-4">
+                    <button type="button" id="editBtn" class="btn btn-outline-info px-4 py-2 fw-bold shadow">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button type="submit" id="saveBtn" class="btn btn-success px-4 py-2 fw-bold shadow d-none">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <button type="button" id="cancelBtn" class="btn btn-secondary px-4 py-2 fw-bold shadow d-none">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <a asp-action="Index" asp-controller="Course" class="btn btn-outline-info px-4 py-2 fw-bold shadow">
+                        <i class="fas fa-arrow-left"></i> Back To Courses
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- JavaScript to Enable Editing -->
+<script>
+    document.getElementById("editBtn").addEventListener("click", function () {
+        let inputs = document.querySelectorAll("input.form-control");
+        inputs.forEach(input => input.removeAttribute("readonly"));
+        document.getElementById("insSelect").disabled = false; // Enable dropdown
+
+        // Show Save & Cancel, Hide Edit
+        document.getElementById("saveBtn").classList.remove("d-none");
+        document.getElementById("cancelBtn").classList.remove("d-none");
+        this.classList.add("d-none");
+    });
+
+    document.getElementById("cancelBtn").addEventListener("click", function () {
+        location.reload(); // Reload page to restore original values
+    });
+</script>
+
+<!-- Button Hover Effects -->
+<style>
+    .btn-outline-info:hover, .btn-success:hover {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+    }
+</style>
+@* <h1>Course Details</h1> *@
+@* <label asp-for="Name"></label> *@
+@* <input asp-for="Name" class="form-control" readonly /> *@
+@* <label asp-for="Topic"></label> *@
+@* <input asp-for="Topic" class="form-control" readonly /> *@
+@* <label asp-for="TotalDeg">Total Degree</label> *@
+@* <input asp-for="TotalDeg" class="form-control" readonly /> *@
+@* <label asp-for="minDeg">Minimum Degree</label> *@
+@* <input asp-for="minDeg" class="form-control" readonly /> *@
+@* <label asp-for="InsName">Instructor Name</label> *@
+@* <input asp-for="InsName" class="form form-control" readonly /> *@
+@* <a asp-action="Index" asp-controller="Course" class="btn btn-warning" style="margin-top:10px">Back To Index</a> *@

@@ -1,0 +1,111 @@
+﻿@model CourseViewModel
+
+@{
+    SelectList listItems = new SelectList(Model.insList, nameof(Instructor.Id), nameof(Instructor.fullName));
+}
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 600px; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+
+        <!-- Header -->
+        <div class="card-header text-center text-white py-3 rounded-top shadow"
+             style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+            <h2 class="fw-bold"><i class="fas fa-book"></i> Add Course</h2>
+        </div>
+
+        <!-- Form Start -->
+        <form asp-action=@(Model == null || Model.Id == 0 ? "Add" : "Edit") asp-route-id="@Model?.Id" class="form">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-book-open"></i> Course Name</label>
+                    <input class="form-control fw-semibold" asp-for="Name" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-list"></i> Topic</label>
+                    <input class="form-control fw-semibold" asp-for="Topic" />
+                    <span asp-validation-for="Topic" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-percentage"></i> Total Degree</label>
+                    <input class="form-control fw-semibold" asp-for="TotalDeg" type="number" />
+                    <span asp-validation-for="TotalDeg" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-arrow-down"></i> Minimum Degree</label>
+                    <input class="form-control fw-semibold" asp-for="minDeg" type="number" />
+                    <span asp-validation-for="minDeg" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-user-tie"></i> Instructor Name</label>
+                    <select class="form-control fw-semibold" asp-for="InsID" asp-items="listItems">
+                        <option value="">Select Instructor</option>
+                    </select>
+                    <span asp-validation-for="InsID" class="text-danger"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="text-center mt-4">
+                    <input type="submit" value=@(Model == null || Model.Id == 0 ? "Create" : "Save") class="btn btn-outline-info px-4 py-2 fw-bold shadow" />
+                    <a asp-action="Index" asp-controller="Course" class="btn btn-outline-info px-4 py-2 fw-bold shadow">
+                        <i class="fas fa-arrow-left"></i> Back To Courses
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .btn-outline-info:hover, .btn-success:hover {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+    }
+</style>
+@* @model CourseViewModel *@
+@* @{ *@
+@*     SelectList listItems = new SelectList(Model.insList, nameof(Instructor.Id), nameof(Instructor.fullName)); *@
+@* } *@
+@* <form asp-action=@(Model == null || Model.Id == 0? "Add" : "Edit") asp-route-id="@Model?.Id" class="form form-control"> *@
+@*     <div asp-validation-summary="All" class="text-danger"></div> *@
+@*     <div> *@
+@*         <label asp-for="Name"></label> *@
+@*         <input class="form form-control" asp-for="Name" /> *@
+@*         <span asp-validation-for="Name" class="text-danger"></span> *@
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="Topic"></label> *@
+@*         <input class="form form-control" asp-for="Topic" /> *@
+@*         <span asp-validation-for="Topic" class="text-danger"></span> *@
+
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="TotalDeg"></label> *@
+@*         <input class="form form-control" asp-for="TotalDeg" /> *@
+@*         <span asp-validation-for="TotalDeg" class="text-danger"></span> *@
+
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="minDeg"></label> *@
+@*         <input class="form form-control" asp-for="minDeg" /> *@
+@*         <span asp-validation-for="minDeg" class="text-danger"></span> *@
+
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="InsID">Instructor Name</label> *@
+@*         <select class="form form-control" *@
+@*                 asp-for="InsID" *@
+@*                 asp-items="listItems"> *@
+@*             <option value="">Select Instructor</option> *@
+@*         </select> *@
+@*         <span asp-validation-for="InsID" class="text-danger"></span> *@
+@*     </div> *@
+@*     <input type="submit" value=@(Model == null||Model.Id == 0? "Create":"Save") class="btn btn-success mt-2" /> *@
+@*     <a asp-action="Index" asp-controller="Course" class="btn btn-warning" style="margin-top:10px">Back To Index</a> *@
+@* </form> *@

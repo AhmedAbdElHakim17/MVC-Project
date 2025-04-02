@@ -1,0 +1,202 @@
+﻿@model StudentViewModel
+
+@{
+    SelectList DeptItems = new SelectList(Model.Departments, "Id", "Name");
+}
+
+@if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("Student"))
+{
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 600px; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+
+            <!-- Header -->
+            <div class="card-header text-center text-white py-3 rounded-top shadow"
+                 style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+                <h2 class="fw-bold"><i class="fas fa-user-graduate"></i> Student Details</h2>
+            </div>
+
+            <!-- Form Start -->
+            <form asp-action=@(Model == null || Model.Id == 0 ? "Add" : "Edit") asp-route-id="@Model?.Id" asp-controller="Student" id="form form-control">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <label class="std fw-bold text-secondary"><i class="fas fa-user"></i> Name</label>
+                        <input asp-for="Name" class="std form-control fw-semibold" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="std fw-bold text-secondary"><i class="fas fa-envelope"></i> Email</label>
+                        <input asp-for="Email" class="std form-control fw-semibold" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="std fw-bold text-secondary"><i class="fas fa-birthday-cake"></i> Age</label>
+                        <input asp-for="Age" class="std form-control fw-semibold" />
+                        <span asp-validation-for="Age" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="std fw-bold text-secondary"><i class="fas fa-map-marker-alt"></i> Address</label>
+                        <input asp-for="Address" class="std form-control fw-semibold" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="std fw-bold text-secondary"><i class="fas fa-image"></i> Image URL</label>
+                        <input asp-for="ImgUrl" class="std form-control fw-semibold" />
+                        <span asp-validation-for="ImgUrl" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="std fw-bold text-secondary"><i class="fas fa-building"></i> Department</label>
+                        <select asp-for="DeptId" asp-items="DeptItems" class="std form-control fw-semibold">
+                            <option value="">Select Department</option>
+                        </select>
+                        <span asp-validation-for="DeptId" class="text-danger"></span>
+                    </div>
+
+                    <!-- Course Selection Dropdown -->
+                    <div class="mt-3 mb-3">
+                        <label class="fw-bold text-secondary"><i class="fas fa-book"></i> Courses</label>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary dropdown-toggle form form-control"
+                                    type="button"
+                                    id="courseDropdown"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                Select Courses (<span id="selectedCount">@(Model?.SelectedListIds?.Count ?? 0)</span> selected)
+                            </button>
+                            <div class="dropdown-menu p-2"
+                                 aria-labelledby="courseDropdown"
+                                 style="max-height: 200px; overflow-y: auto;">
+                                @foreach (var crs in Model.Courses)
+                                {
+                                    <div class="form-check">
+                                        <input type="checkbox"
+                                               class="form-check-input"
+                                               name="SelectedListIds"
+                                               value="@crs.Id"
+                                               checked="@Model?.SelectedListIds?.Contains(crs.Id)" />
+
+                                        <label class="form-check-label">@crs.Name</label>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="text-center mt-4">
+                        <input type="submit" class="btn btn-outline-info px-4 py-2 fw-bold shadow" value=@(Model == null || Model.Id == 0 ? "Create" : "Save") />
+                        <a asp-action="Index" asp-controller=@(!User.IsInRole("Student") ? "Student" : "Home") class="btn btn-outline-info px-4 py-2 fw-bold shadow">
+                            <i class="fas fa-arrow-left"></i> @(User.IsInRole("Student") ? "Back To Home" : "Back To Index")
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+@if (User.IsInRole("Student"))
+{
+    <script>
+
+        var eles = document.getElementsByClassName("std");
+        for (var e of eles)
+        {
+            e.hidden = true;
+        }
+    </script>
+}
+<style>
+    .btn-outline-info:hover, .btn-success:hover {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+    }
+</style>
+@* @model StudentViewModel *@
+@* @{ *@
+@*     SelectList DeptItems = new SelectList(Model.Departments, "Id", "Name"); *@
+@* } *@
+
+@* @if (User.IsInRole("Admin") || User.IsInRole("HR") || User.IsInRole("Student")) *@
+@* { *@
+@*     <form asp-action=@(Model == null || Model.Id == 0? "Add" : "Edit") asp-route-id="@Model?.Id" asp-controller="Student" id="form form-control"> *@
+@*         <div asp-validation-summary="All" class="text-danger"></div> *@
+@*         <div> *@
+@*             <label class="std" asp-for="Name"></label> *@
+@*             <input asp-for="Name" class="std form-control" /> *@
+@*             <span asp-validation-for="Name" class="text-danger"></span> *@
+@*         </div> *@
+@*         <div> *@
+@*             <label class="std" asp-for="Email"></label> *@
+@*             <input asp-for="Email" class="std form-control" /> *@
+@*             <span asp-validation-for="Email" class="text-danger"></span> *@
+@*         </div> *@
+@*         <div> *@
+@*             <label class="std" asp-for="Age"></label> *@
+@*             <input asp-for="Age" class="std form-control" /> *@
+@*             <span asp-validation-for="Age" class="text-danger"></span> *@
+@*         </div> *@
+@*         <div> *@
+@*             <label class="std" asp-for="Address"></label> *@
+@*             <input asp-for="Address" class="std form-control" /> *@
+@*             <span asp-validation-for="Address" class="text-danger"></span> *@
+@*         </div> *@
+@*         <div> *@
+@*             <label class="std" asp-for="ImgUrl">ImageURL</label> *@
+@*             <input asp-for="ImgUrl" class="std form-control" /> *@
+@*             <span asp-validation-for="ImgUrl" class="text-danger"></span> *@
+@*         </div> *@
+@*         <div> *@
+@*             <label class="std" asp-for="DeptId">Department</label> *@
+@*             <select asp-for="DeptId" asp-items="DeptItems" class="std form-control"> *@
+@*                 <option value="">Select Department</option> *@
+@*             </select> *@
+@*             <span asp-validation-for="DeptId" class="text-danger"></span> *@
+@*         </div> *@
+@*         <div class="mt-3 mb-3"> *@
+@*             <div class="dropdown"> *@
+@*                 <button class="btn btn-outline-secondary dropdown-toggle" *@
+@*                         type="button" *@
+@*                         id="courseDropdown" *@
+@*                         data-bs-toggle="dropdown" *@
+@*                         aria-expanded="false"> *@
+@*                     Select Courses (<span id="selectedCount">@(Model?.SelectedListIds?.Count ?? 0)</span> selected) *@
+@*                 </button> *@
+@*                 <div class="dropdown-menu p-2" *@
+@*                      aria-labelledby="courseDropdown" *@
+@*                      style="max-height: 200px; overflow-y: auto;"> *@
+@*                     @foreach (var crs in Model.Courses) *@
+@*                     { *@
+@*                         <div class="form-check"> *@
+@*                             <input type="checkbox" *@
+@*                                    class="form-check-input" *@
+@*                                    name="SelectedListIds" *@
+@*                                    value="@crs.Id" *@
+@*                                    checked="@Model?.SelectedListIds?.Contains(crs.Id)" /> *@
+
+@*                             <label class="form-check-label">@crs.Name</label> *@
+@*                         </div> *@
+@*                     } *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+@*         <input type="submit" class="btn btn-success mt-3" value=@(Model==null || Model.Id == 0? "Create" : "Save") /> *@
+@*         <a asp-action="Index" asp-controller=@(!User.IsInRole("Student")?"Student" : "Home") class="btn btn-warning mt-3">@(User.IsInRole("Student") ? "Back To Home" : "Back To Index")</a> *@
+@*     </form> *@
+@* } *@
+@* @if (User.IsInRole("Student")) *@
+@* { *@
+@*     <script> *@
+@*         var eles = document.getElementsByClassName("std"); *@
+@*         for (var e of eles) *@
+@*         { *@
+@*             e.hidden = true; *@
+@*         } *@
+@*     </script> *@
+@* } *@

@@ -1,0 +1,139 @@
+﻿@model InstructorViewModel
+
+@{
+    SelectList selectListItems = new SelectList(Model.Departments, "Id", "Name");
+}
+
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 600px; width: 100%; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+
+        <!-- Header -->
+        <div class="card-header text-center text-white py-3 rounded-top shadow"
+             style="background: linear-gradient(135deg, #6a11cb, #2575fc);">
+            <h2 class="fw-bold"><i class="fas fa-chalkboard-teacher"></i> Instructor Details</h2>
+        </div>
+
+        <!-- Form Start -->
+        <form method="post" asp-action=@(Model == null || Model.Id == 0 ? "Add" : "Edit") asp-route-id="@Model?.Id" asp-controller="Instructor">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-user"></i> First Name</label>
+                    <input asp-for="fName" class="form-control fw-semibold" />
+                    <span asp-validation-for="fName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-user"></i> Last Name</label>
+                    <input asp-for="lName" class="form-control fw-semibold" />
+                    <span asp-validation-for="lName" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3" hidden=@(!User.IsInRole("Admin"))>
+                    <label class="fw-bold text-secondary"><i class="fas fa-envelope"></i> Email</label>
+                    <input asp-for="Email" class="form-control fw-semibold" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-dollar-sign"></i> Salary</label>
+                    <input asp-for="Salary" class="form-control fw-semibold" />
+                    <span asp-validation-for="Salary" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-image"></i> Image URL</label>
+                    <input asp-for="ImageUrl" class="form-control fw-semibold" />
+                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-birthday-cake"></i> Age</label>
+                    <input asp-for="Age" class="form-control fw-semibold" />
+                    <span asp-validation-for="Age" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-calendar-alt"></i> Hiring Date</label>
+                    <input asp-for="HiringDate" class="form-control fw-semibold" />
+                    <span asp-validation-for="HiringDate" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="fw-bold text-secondary"><i class="fas fa-building"></i> Department</label>
+                    <select asp-for="DeptId" class="form-control fw-semibold" asp-items="selectListItems">
+                        <option value="">Select Department</option>
+                    </select>
+                    <span asp-validation-for="DeptId" class="text-danger"></span>
+                </div>
+
+                <!-- Buttons -->
+                <div class="text-center mt-4">
+                    <input type="submit" value=@(Model == null || Model.Id == 0 ? "Create" : "Save") class="btn btn-outline-info px-4 py-2 fw-bold shadow" />
+                    <a asp-action="Index" asp-controller="Instructor" class="btn btn-outline-info px-4 py-2 fw-bold shadow">
+                        <i class="fas fa-arrow-left"></i> Back To Instructors
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+    .btn-outline-info:hover, .btn-success:hover {
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        color: white;
+    }
+</style>
+@* @model InstructorViewModel *@
+@* @{ *@
+@*     SelectList selectListItems = new SelectList(Model.Departments, "Id", "Name"); *@
+@* } *@
+@* <form method="post" asp-action=@(Model==null || Model.Id == 0? "Add" : "Edit") asp-route-id="@Model?.Id" asp-controller="Instructor"> *@
+@*     <div asp-validation-summary="All" class="text-danger"></div> *@
+@*     <div> *@
+@*         <label asp-for="fName"></label> *@
+@*         <input asp-for="fName" class="form form-control" /> *@
+@*         <span asp-validation-for="fName" class="text-danger"></span> *@
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="lName"></label> *@
+@*         <input asp-for="lName" class="form form-control" /> *@
+@*         <span asp-validation-for="lName" class="text-danger"></span> *@
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="Email" hidden=@(!User.IsInRole("Admin"))></label> *@
+@*         <input asp-for="Email" class="form form-control" hidden=@(!User.IsInRole("Admin")) /> *@
+@*         <span asp-validation-for="Email" class="text-danger" hidden=@(!User.IsInRole("Admin"))></span> *@
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="Salary"></label> *@
+@*         <input asp-for="Salary" class="form form-control" /> *@
+@*         <span asp-validation-for="Salary" class="text-danger"></span> *@
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="ImageUrl"></label> *@
+@*         <input asp-for="ImageUrl" class="form form-control" /> *@
+@*         <span asp-validation-for="ImageUrl" class="text-danger"></span> *@
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="Age"></label> *@
+@*         <input asp-for="Age" class="form form-control" /> *@
+@*         <span asp-validation-for="Age" class="text-danger"></span> *@
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="HiringDate"></label> *@
+@*         <input asp-for="HiringDate" class="form form-control" /> *@
+@*         <span asp-validation-for="HiringDate" class="text-danger"></span> *@
+@*     </div> *@
+@*     <div> *@
+@*         <label asp-for="DeptId">Department</label> *@
+@*         <select asp-for="DeptId" class="form form-control" asp-items="selectListItems"> *@
+@*             <option value="">Select Department</option> *@
+@*         </select> *@
+@*         <span asp-validation-for="DeptId" class="text-danger"></span> *@
+
+@*     </div> *@
+@*     <input type="submit" value=@(Model==null || Model.Id == 0? "Create" : "Save") class="btn btn-success mt-2" /> *@
+@* <a asp-action="Index" asp-controller="Instructor" class="btn btn-warning mt-2">Back To Index</a> *@
+@* </form> *@

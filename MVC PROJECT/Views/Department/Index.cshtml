@@ -1,0 +1,34 @@
+﻿@model IEnumerable<DepartmentViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_WebLayout";
+}
+
+<h1>Index</h1>
+
+<style>
+    td, th {
+        text-align: center;
+        vertical-align: middle;
+    }
+</style>
+<table class="table table-bordered table-hover">
+    <tr>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Details</th>
+        <th>Edit</th>
+        <th>Delete</th>
+
+    </tr>
+    @foreach (var dept in Model)
+    {
+        <tr>
+            <td>@dept.Name</td>
+            <td>@dept.Location</td>
+            <partial name="_SharedButtons" model="dept.Id" />
+        </tr>
+    }
+</table>
+<a class="btn btn-success" asp-action="Add">NEW</a>
