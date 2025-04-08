@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MVC_PROJECT.CORE;
 using MVC_PROJECT.Models;
 using MVC_PROJECT.ViewModels;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,54 +15,33 @@ namespace MVC_PROJECT.Controllers
     {
         private readonly IUnitOfWork unitOfWork;
         private readonly UserManager<AppUser> userManager;
+        private readonly IMapper mapper;
 
-        public StudentController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager)
+        public StudentController(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.userManager = userManager;
+            this.mapper = mapper;
         }
         [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Index()
         {
-            var studentlist = await unitOfWork.Students.GetAllAsync();
-            var stdList = new List<StudentViewModel>();
-            foreach (var item in studentlist)
-            {
-                stdList.Add(new StudentViewModel()
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Email = item.Email,
-                    ImgUrl = item.ImgUrl,
-                    Address = item.Address,
-                    Age = item.Age,
-                    DeptId = item.DeptId,
-                    DeptName = (await unitOfWork.Departments.GetByIdAsync(item.DeptId)).Name,
-                    Departments = await unitOfWork.Departments.GetAllAsync()
-                });
-            }
+
+            var studentlist = await unitOfWork.Students.GetAllAsync(nameof(Student.Department));
+            var stdList = mapper.Map<List<StudentViewModel>>(studentlist);
             return View(stdList);
         }
         [Authorize(Roles = "Student,Admin")]
         public async Task<IActionResult> DetailsVM(int id)
         {
             var user = await userManager.GetUserAsync(User);
+            if(user == null) return NotFound(user);
             var studentModel = id == 0 || User.IsInRole("Student") ?
-                await unitOfWork.Students.FindAsync(s => s.UserId == user.Id) : await unitOfWork.Students.GetByIdAsync(id);
+                await unitOfWork.Students.FindAsync(s => s.UserId == user.Id, nameof(Student.Department)) : await unitOfWork.Students.FindAsync(s => s.Id == id, nameof(Student.Department));
             if (studentModel != null)
             {
-                var std = new StudentViewModel()
-                {
-                    Id = studentModel.Id,
-                    Name = studentModel.Name,
-                    Email = studentModel.Email,
-                    ImgUrl = studentModel.ImgUrl,
-                    Address = studentModel.Address,
-                    Age = studentModel.Age,
-                    DeptId = studentModel.DeptId,
-                    DeptName = (await unitOfWork.Departments.GetByIdAsync(studentModel.DeptId)).Name,
-                    CourseStds = unitOfWork.Students.SelectedIdsForShow(studentModel.Id),
-                };
+                var std = mapper.Map<StudentViewModel>(studentModel);
+                std.CourseStds = unitOfWork.Students.SelectedIdsForShow(studentModel.Id);
                 return View(std);
             }
             return RedirectToAction("Home");
@@ -84,18 +64,13 @@ namespace MVC_PROJECT.Controllers
             if (ModelState.IsValid)
             {
                 var user = await unitOfWork.UserManager.FindByEmailAsync(student.Email);
-                var std = new Student()
+                if (user == null)
                 {
-                    Id = student.Id,
-                    Name = student.Name,
-                    Email = student.Email,
-                    ImgUrl = student.ImgUrl,
-                    Address = student.Address,
-                    Age = student.Age,
-                    DeptId = student.DeptId,
-                    CourseStds = unitOfWork.Students.SelectedIdsForCreation(student.SelectedListIds),
-                    UserId = user?.Id
-                };
+                    return View("Error", new ErrorViewModel { RequestId = "No user found with this email. Please register first." });
+                }
+                var std = mapper.Map<Student>(student);
+                std.CourseStds = unitOfWork.Students.SelectedIdsForCreation(student.SelectedListIds);
+                std.UserId = user?.Id;
                 await unitOfWork.Students.AddAsync(std);
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
@@ -107,22 +82,13 @@ namespace MVC_PROJECT.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             var user = await userManager.GetUserAsync(User);
+            if (user == null) return NotFound(user);
             var student = id == 0 || User.IsInRole("Student") ?
-                await unitOfWork.Students.FindAsync(s => s.UserId == user.Id,nameof(Student.CourseStds)) : await unitOfWork.Students.FindAsync(s => s.Id == id, nameof(Student.CourseStds));
-            StudentViewModel std = new StudentViewModel()
-            {
-                Id = student.Id,
-                Name = student.Name,
-                Email = student.Email,
-                ImgUrl = student.ImgUrl,
-                Address = student.Address,
-                Age = student.Age,
-                DeptId = student.DeptId,
-                DeptName = (await unitOfWork.Departments.GetByIdAsync(student.DeptId)).Name,
-                SelectedListIds = student.CourseStds.Select(cs => cs.CrsId).ToList(),
-                Courses = await unitOfWork.Courses.GetAllAsync(),
-                Departments = await unitOfWork.Departments.GetAllAsync(),
-            };
+                await unitOfWork.Students.FindAsync(s => s.UserId == user.Id, nameof(Student.CourseStds)) : await unitOfWork.Students.FindAsync(s => s.Id == id, nameof(Student.CourseStds));
+            var std = mapper.Map<StudentViewModel>(student);
+            std.SelectedListIds = unitOfWork.Students.GetSelectedIds(student);
+            std.Courses = await unitOfWork.Courses.GetAllAsync();
+            std.Departments = await unitOfWork.Departments.GetAllAsync();
             return View(std);
         }
         [HttpPost]
@@ -134,19 +100,10 @@ namespace MVC_PROJECT.Controllers
                 return View(student);
             }
             var user = await unitOfWork.UserManager.FindByEmailAsync(student.Email);
-            Student std = new Student()
-            {
-                Id = student.Id,
-                Name = student.Name,
-                Email = student.Email,
-                ImgUrl = student.ImgUrl,
-                Address = student.Address,
-                Age = student.Age,
-                DeptId = student.DeptId,
-                UserId = user.Id,
-                Department = await unitOfWork.Departments.GetByIdAsync(student.DeptId),
-                CourseStds = unitOfWork.Students.SelectedIdsForUpdate(student.SelectedListIds, student.Id)
-            };
+            if (user == null) return NotFound();
+            var std = mapper.Map<Student>(student);
+            std.UserId = user.Id;
+            std.CourseStds = unitOfWork.Students.SelectedIdsForUpdate(student.SelectedListIds, student.Id);
             unitOfWork.Students.Update(std);
             await unitOfWork.CompleteAsync();
             return (User.IsInRole("Student") ? RedirectToAction("Index", "Home") : RedirectToAction("Index"));
@@ -154,12 +111,14 @@ namespace MVC_PROJECT.Controllers
         [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Delete(int id)
         {
-            Student student = await unitOfWork.Students.GetByIdAsync(id);
-            AppUser user = await unitOfWork.UserManager.FindByEmailAsync(student.Email);
-            if (user != null)
+            var student = await unitOfWork.Students.GetByIdAsync(id);
+            if (student == null) return NotFound(student);
+            var user = await unitOfWork.UserManager.FindByEmailAsync(student.Email);
+            if (user == null) return NotFound();
+            if (user == null) return NotFound(user);
                 await unitOfWork.UserManager.DeleteAsync(user);
             if (student != null)
-            unitOfWork.Students.Delete(student);
+                unitOfWork.Students.Delete(student);
             await unitOfWork.CompleteAsync();
             return RedirectToAction("Index");
         }

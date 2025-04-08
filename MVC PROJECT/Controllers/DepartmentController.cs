@@ -1,42 +1,46 @@
-﻿namespace MVC_PROJECT.Controllers
+﻿using AutoMapper;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+
+namespace MVC_PROJECT.Controllers
 {
     public class DepartmentController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMapper mapper;
 
-        public DepartmentController(IUnitOfWork unitOfWork)
+        public DepartmentController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
+            this.mapper = mapper;
         }
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var depts = await unitOfWork.Departments.GetAllAsync();
-            if(depts.Count == 0) return NotFound();
-            var deptModel = new List<DepartmentViewModel>();
-            foreach (var item in depts)
-            {
-                deptModel.Add(new DepartmentViewModel
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    Description = item.Description,
-                    Location = item.Location,
-                });
-            }
-            return View(deptModel);
+            if (depts.Count == 0) return NotFound();
+            var deptVMs = mapper.Map<List<DepartmentViewModel>>(depts);
+            //var deptVMs = depts.Select(d => new DepartmentViewModel
+            //{
+
+            //    Id = d.Id,
+            //    Name = d.Name,
+            //    Description = d.Description,
+            //    Location = d.Location,
+            //});
+            return View(deptVMs);
         }
         public async Task<IActionResult> DetailsVM(int id)
         {
             var dept = await unitOfWork.Departments.GetByIdAsync(id);
             if (dept == null) return NotFound();
-            var deptModel = new DepartmentViewModel
-            {
-                Id = id,
-                Name = dept.Name,
-                Description = dept.Description,
-                Location = dept.Location,
-            };
+            var deptModel = mapper.Map<DepartmentViewModel>(dept);
+            //var deptModel = new DepartmentViewModel
+            //{
+            //    Id = id,
+            //    Name = dept.Name,
+            //    Description = dept.Description,
+            //    Location = dept.Location,
+            //};
             return View(deptModel);
         }
         [HttpGet]
@@ -51,13 +55,14 @@
         {
             if (ModelState.IsValid)
             {
-                var department = new Department()
-                {
-                    Id = dept.Id,
-                    Name = dept.Name,
-                    Description = dept.Description,
-                    Location = dept.Location,
-                };
+                //var department = new Department()
+                //{
+                //    Id = dept.Id,
+                //    Name = dept.Name,
+                //    Description = dept.Description,
+                //    Location = dept.Location,
+                //};
+                var department = mapper.Map<Department>(dept);
                 await unitOfWork.Departments.AddAsync(department);
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
@@ -69,13 +74,14 @@
         {
             var dept = await unitOfWork.Departments.GetByIdAsync(id);
             if (dept == null) return NotFound();
-            var department = new DepartmentViewModel()
-            {
-                Id = dept.Id,
-                Name = dept.Name,
-                Description = dept.Description,
-                Location = dept.Location,
-            };
+            var department = mapper.Map<DepartmentViewModel>(dept);
+            //var department = new DepartmentViewModel()
+            //{
+            //    Id = dept.Id,
+            //    Name = dept.Name,
+            //    Description = dept.Description,
+            //    Location = dept.Location,
+            //};
             return View(department);
         }
         [HttpPost]
@@ -84,13 +90,14 @@
         {
             if (ModelState.IsValid)
             {
-                var department = new Department()
-                {
-                    Id = dept.Id,
-                    Name = dept.Name,
-                    Description = dept.Description,
-                    Location = dept.Location,
-                };
+                //var department = new Department()
+                //{
+                //    Id = dept.Id,
+                //    Name = dept.Name,
+                //    Description = dept.Description,
+                //    Location = dept.Location,
+                //};
+                var department = mapper.Map<Department>(dept);
                 unitOfWork.Departments.Update(department);
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
@@ -100,15 +107,13 @@
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
-            Department dept = await unitOfWork.Departments.GetByIdAsync(id);
+            var dept = await unitOfWork.Departments.GetByIdAsync(id);
             if (dept == null) return NotFound();
-            if (dept != null)
-            {
-                unitOfWork.Departments.Delete(dept);
-                await unitOfWork.CompleteAsync();
-                return RedirectToAction("Index");
-            }
-            return View(id);
+            if (dept.InsList.Count > 0 || dept.StdList.Count > 0) return View(id); 
+            unitOfWork.Departments.Delete(dept);
+            await unitOfWork.CompleteAsync();
+            return RedirectToAction("Index");
+            //return Content("The Department must be Empty of Students or Instructors to get deleted");
         }
     }
 }

@@ -26,7 +26,7 @@ namespace MVC_PROJECT.EF.Repositories
                     query = query.Include(include);
             return query.ToListAsync();
         }
-        public async Task<T> GetByIdAsync(int? id) => await context.Set<T>().FindAsync(id);
+        public async Task<T?> GetByIdAsync(int? id) => await context.Set<T>().FindAsync(id);
         public Task<List<T>> FindAllAsync(Expression<Func<T, bool>> predicate, params string[] includes)
         {
             IQueryable<T> query = context.Set<T>().AsNoTracking();
@@ -36,10 +36,10 @@ namespace MVC_PROJECT.EF.Repositories
             return query.Where(predicate).ToListAsync();
         }
 
-        public Task<T> FindAsync(Expression<Func<T, bool>> predicate, params string[] includes)
+        public Task<T?> FindAsync(Expression<Func<T, bool>> predicate, params string[] includes)
         {
             IQueryable<T> query = context.Set<T>().AsNoTracking();
-            if (includes != null)
+            if (includes != null && query != null)
                 foreach (var include in includes)
                     query = query.Include(include);
             return query.FirstOrDefaultAsync(predicate);

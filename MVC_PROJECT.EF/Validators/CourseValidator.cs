@@ -17,7 +17,7 @@ namespace MVC_PROJECT.EF.Validators
         }
         public bool IsValid(string name, int Id)
         {
-            return context.courses.Any(c => c.Id == Id && c.Name == name);
+            return !context.courses.Any(c => c.Id != Id && c.Name == name);
         }
     }
 }

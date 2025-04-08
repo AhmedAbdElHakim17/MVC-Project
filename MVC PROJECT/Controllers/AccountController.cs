@@ -27,12 +27,12 @@ namespace MVC_PROJECT.Controllers
             {
                 return View(userViewModel);
             }
-            Student student = await unitOfWork.Students.FindAsync(s => s.Email == userViewModel.Email);
+            var student = await unitOfWork.Students.FindAsync(s => s.Email == userViewModel.Email);
             if (student != null)
             {
                 return await CreateUserWithRole(userViewModel, UserRoles.Student.ToString(), student);
             }
-            Instructor instructor = await unitOfWork.Instructors.FindAsync(s => s.Email == userViewModel.Email);
+            var instructor = await unitOfWork.Instructors.FindAsync(s => s.Email == userViewModel.Email);
             if (instructor != null)
             {
                 return await CreateUserWithRole(userViewModel, UserRoles.Instructor.ToString(), instructor);
@@ -51,7 +51,7 @@ namespace MVC_PROJECT.Controllers
         {
             if (!ModelState.IsValid)
                 return View(userVM);
-            AppUser appUser = await unitOfWork.UserManager.FindByEmailAsync(userVM.Email);
+            var appUser = await unitOfWork.UserManager.FindByEmailAsync(userVM.Email);
             if (appUser == null)
             {
                 ModelState.AddModelError("", "Email or Password is Wrong");
@@ -65,7 +65,7 @@ namespace MVC_PROJECT.Controllers
             ModelState.AddModelError("", "Email or Password is Wrong");
             return View(userVM);
         }
-        public async Task<IActionResult> SignOut()
+        public new async Task<IActionResult> SignOut()
         {
             await unitOfWork.SignInManager.SignOutAsync();
             return RedirectToAction("Login");

@@ -9,9 +9,9 @@ namespace MVC_PROJECT.CORE.Interfaces
 {
     public interface IBaseRepository<T> where T : class
     {
-        Task<T> GetByIdAsync(int? id);
+        Task<T?> GetByIdAsync(int? id);
         Task<List<T>> GetAllAsync(params string[] includes);
-        Task<T> FindAsync(Expression<Func<T, bool>> predicate, params string[] includes);
+        Task<T?> FindAsync(Expression<Func<T, bool>> predicate, params string[] includes);
         Task<List<T>> FindAllAsync(Expression<Func<T, bool>> predicate, params string[] includes);
         Task<T> AddAsync(T entity);
         T Update(T entity);

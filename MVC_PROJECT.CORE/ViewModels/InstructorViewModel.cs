@@ -6,11 +6,11 @@ namespace MVC_PROJECT.ViewModels
         public int Id { get; set; }
 
         [Required(ErrorMessage = "First Name is Required")]
-        public string fName { get; set; }
+        public string ?fName { get; set; }
 
         [Required(ErrorMessage = "Last Name is Required")]
         [InsUniqueName]
-        public string lName { get; set; }
+        public string ?lName { get; set; }
 
         [Required(ErrorMessage = "Email is Required")]
         [DataType(DataType.EmailAddress)]
@@ -22,7 +22,7 @@ namespace MVC_PROJECT.ViewModels
 
         [Required(ErrorMessage = "Image Url is Required")]
         [RegularExpression(@"\w+\.(jpg|png|svg)", ErrorMessage = "Image Format Must be Jpg of Png")]
-        public string ImageUrl { get; set; }
+        public string ?ImageUrl { get; set; }
 
         [Required(ErrorMessage = "Age is Required")]
         [Range(25, 65, ErrorMessage = "Age Must be between 25 and 65")]

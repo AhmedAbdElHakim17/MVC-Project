@@ -1,44 +1,24 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using Microsoft.IdentityModel.Tokens;
-using MVC_PROJECT.Models;
-using MVC_PROJECT.Repositories;
-using MVC_PROJECT.ViewModels;
 
 namespace MVC_PROJECT.Controllers
 {
     public class InstructorController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
+        private readonly IMapper mapper;
 
-        public InstructorController(IUnitOfWork unitOfWork)
+        public InstructorController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
+            this.mapper = mapper;
         }
         [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Index()
         {
-            var Instuctors = await unitOfWork.Instructors.GetAllAsync(nameof(Department));
-            List<InstructorViewModel> list = new List<InstructorViewModel>();
-            foreach (var item in Instuctors)
-            {
-                list.Add(new InstructorViewModel
-                {
-                    Id = item.Id,
-                    fName = item.fName,
-                    lName = item.lName,
-                    Salary = item.Salary,
-                    ImageUrl = item.ImageUrl,
-                    Age = item.Age,
-                    HiringDate = item.HiringDate,
-                    DeptId = item.DeptId,
-                    DeptName = item.Department.Name,
-                    Courses = await unitOfWork.Courses.GetAllAsync(),
-                    Departments = await unitOfWork.Departments.GetAllAsync(),
-                });
-            }
-            return View(list);
+            var instuctors = await unitOfWork.Instructors.GetAllAsync([nameof(Instructor.Department), nameof(Instructor.Courses)]);
+            var InsList = mapper.Map<List<InstructorViewModel>>(instuctors);
+            return View(InsList);
         }
         [HttpGet]
         [Authorize(Roles = "Admin")]
@@ -53,52 +33,27 @@ namespace MVC_PROJECT.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(InstructorViewModel ins)
+        public async Task<IActionResult> Add(InstructorViewModel insVM)
         {
             if (ModelState.IsValid)
             {
-                var inst = new Instructor()
-                {
-                    Id = ins.Id,
-                    fName = ins.fName,
-                    lName = ins.lName,
-                    Email = ins.Email,
-                    Salary = ins.Salary,
-                    ImageUrl = ins.ImageUrl,
-                    Age = ins.Age,
-                    HiringDate = ins.HiringDate,
-                    DeptId = ins.DeptId,
-                };
-                await unitOfWork.Instructors.AddAsync(inst);
+                var ins = mapper.Map<Instructor>(insVM);
+                await unitOfWork.Instructors.AddAsync(ins);
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
             }
-            ins.Departments = await unitOfWork.Departments.GetAllAsync();
-            ins.Courses = await unitOfWork.Courses.GetAllAsync();
-            return View(ins);
+            insVM.Departments = await unitOfWork.Departments.GetAllAsync();
+            insVM.Courses = await unitOfWork.Courses.GetAllAsync();
+            return View(insVM);
         }
         [HttpGet]
         [Authorize(Roles = "HR,Admin")]
         public async Task<IActionResult> Edit(int id)
         {
-
-            var ins = await unitOfWork.Instructors.GetByIdAsync(id);
-            if (ins == null) return NotFound();
-            var insVM = new InstructorViewModel()
-            {
-                Id = ins.Id,
-                fName = ins.fName,
-                lName = ins.lName,
-                Email = ins.Email,
-                Salary = ins.Salary,
-                ImageUrl = ins.ImageUrl,
-                Age = ins.Age,
-                HiringDate = ins.HiringDate,
-                DeptId = ins.DeptId,
-                DeptName = (await unitOfWork.Departments.GetByIdAsync(ins.DeptId)).Name,
-                Courses = await unitOfWork.Courses.GetAllAsync(),
-                Departments = await unitOfWork.Departments.GetAllAsync(),
-            };
+            var ins = await unitOfWork.Instructors.FindAsync(i => i.Id == id, [nameof(Instructor.Courses), nameof(Instructor.Department)]);
+            if (ins == null) return View("Error", new ErrorViewModel { RequestId = "This Instructor doesn't Exist, Please Try Again" });
+            var insVM = mapper.Map<InstructorViewModel>(ins);
+            insVM.Departments = await unitOfWork.Departments.GetAllAsync();
             return View(insVM);
         }
         [HttpPost]
@@ -108,18 +63,8 @@ namespace MVC_PROJECT.Controllers
             if (ModelState.IsValid)
             {
                 var user = await unitOfWork.UserManager.FindByEmailAsync(insVM.Email);
-                var ins = new Instructor()
-                {
-                    Id = id,
-                    fName = insVM.fName,
-                    lName = insVM.lName,
-                    Email = (await unitOfWork.Instructors.FindAsync(i => i.Id == id)).Email,
-                    Salary = insVM.Salary,
-                    ImageUrl = insVM.ImageUrl,
-                    Age = insVM.Age,
-                    HiringDate = insVM.HiringDate,
-                    DeptId = insVM.DeptId,
-                };
+                if (user == null) return View("Error", new ErrorViewModel { RequestId = "This User doesn't Exist, Please Try Again" });
+                var ins = mapper.Map<Instructor>(insVM);
                 if (ins.UserId.IsNullOrEmpty())
                 {
                     ins.UserId = user?.Id;
@@ -128,50 +73,37 @@ namespace MVC_PROJECT.Controllers
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
             }
-            insVM.DeptName = (await unitOfWork.Departments.GetByIdAsync(insVM.DeptId)).Name;
-            insVM.Courses = await unitOfWork.Courses.GetAllAsync();
+            //insVM.DeptName = (await unitOfWork.Departments.GetByIdAsync(insVM.DeptId))?.Name;
+            //insVM.Courses = await unitOfWork.Courses.GetAllAsync();
             insVM.Departments = await unitOfWork.Departments.GetAllAsync();
             return View(insVM);
         }
         [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Delete(int id)
         {
-            Instructor ins = await unitOfWork.Instructors.GetByIdAsync(id);
-            AppUser user = await unitOfWork.UserManager.FindByIdAsync((string)ins.UserId);
+            var ins = await unitOfWork.Instructors.FindAsync(i => i.Id == id, nameof(Instructor.Courses));
+            if (ins == null) return View("Error", new ErrorViewModel { RequestId = "This Instructor doesn't Exist, Please Try Again" });
+            var user = await unitOfWork.UserManager.FindByIdAsync(ins.UserId);
+            //if (ins.Courses.Count > 0) return 
             if (user != null)
                 await unitOfWork.UserManager.DeleteAsync(user);
-            if (ins != null)
-            {
-                unitOfWork.Instructors.Delete(ins);
-                await unitOfWork.CompleteAsync();
-                return RedirectToAction("Index");
-            }
-            return View(id);
+            unitOfWork.Instructors.Delete(ins);
+            await unitOfWork.CompleteAsync();
+            return RedirectToAction("Index");
         }
         [Authorize(Roles = "Admin, Instructor")]
         public async Task<IActionResult> DetailsVM(int id)
         {
             var user = await unitOfWork.UserManager.GetUserAsync(User);
-            var insModel = id == 0 || User.IsInRole("Instructor") ?
-                await unitOfWork.Instructors.FindAsync(i => i.UserId == user.Id) : await unitOfWork.Instructors.GetByIdAsync(id);
-            if (insModel != null)
+            if (user == null) return View("Error", new ErrorViewModel { RequestId = "This User doesn't Exist, Please Try Again" });
+            var ins = id == 0 || User.IsInRole("Instructor") ?
+                await unitOfWork.Instructors.FindAsync(i => i.UserId == user.Id) : 
+                await unitOfWork.Instructors.FindAsync(i => i.Id == id, [nameof(Instructor.Department), nameof(Instructor.Courses)]);
+            if (ins != null)
             {
-                var ins = new InstructorViewModel()
-                {
-                    Id = id,
-                    fName = insModel.fullName.Split(" ")[0],
-                    lName = insModel.fullName.Split(" ")[1],
-                    Email = insModel.Email,
-                    Salary = insModel.Salary,
-                    ImageUrl = insModel.ImageUrl,
-                    HiringDate = insModel.HiringDate,
-                    Age = insModel.Age,
-                    DeptId = insModel.DeptId,
-                    DeptName = (await unitOfWork.Departments.GetByIdAsync(insModel.DeptId)).Name,
-                    Courses = (await unitOfWork.Courses.GetAllAsync()).Where(c => c.InsID == insModel.Id).ToList(),
-                    Departments = await unitOfWork.Departments.GetAllAsync()
-                };
-                return View(ins);
+                var insVM = mapper.Map<InstructorViewModel>(ins);
+                insVM.Departments = await unitOfWork.Departments.GetAllAsync();
+                return View(insVM);
             }
             return RedirectToAction("Index", "Home");
         }

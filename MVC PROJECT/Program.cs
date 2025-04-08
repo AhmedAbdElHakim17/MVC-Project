@@ -32,7 +32,7 @@ namespace MVC_PROJECT
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("cs"));
             });
-            builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddAutoMapper(typeof(MappingProfile));
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -46,7 +46,7 @@ namespace MVC_PROJECT
             app.UseSession();
 
             app.UseRouting();
-
+                
             //app.UseMiddleware<LoggingMiddleware>();
 
             //app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
