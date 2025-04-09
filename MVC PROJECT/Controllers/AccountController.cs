@@ -1,9 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
 using MVC_PROJECT.Enums;
-using MVC_PROJECT.Models;
-using MVC_PROJECT.ViewModels;
 
 namespace MVC_PROJECT.Controllers
 {

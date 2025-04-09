@@ -29,7 +29,7 @@ namespace MVC_PROJECT.Controllers
 
             var studentlist = await unitOfWork.Students.GetAllAsync(nameof(Student.Department));
             var stdList = mapper.Map<List<StudentViewModel>>(studentlist);
-            return View(stdList);
+            return View("Student_Index",stdList);
         }
         [Authorize(Roles = "Student,Admin")]
         public async Task<IActionResult> DetailsVM(int id)
@@ -42,9 +42,9 @@ namespace MVC_PROJECT.Controllers
             {
                 var std = mapper.Map<StudentViewModel>(studentModel);
                 std.CourseStds = unitOfWork.Students.SelectedIdsForShow(studentModel.Id);
-                return View(std);
+                return View("Student_DetailsVM",std);
             }
-            return RedirectToAction("Home");
+            return RedirectToAction("Index");
         }
         [HttpGet]
         [Authorize(Roles = "Admin")]
@@ -55,7 +55,7 @@ namespace MVC_PROJECT.Controllers
                 Courses = await unitOfWork.Courses.GetAllAsync(),
                 Departments = await unitOfWork.Departments.GetAllAsync(),
             };
-            return View(std);
+            return View("AddStudent", std);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -75,7 +75,7 @@ namespace MVC_PROJECT.Controllers
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
             }
-            return View(student);
+            return View("AddStudent", student);
         }
         [HttpGet]
         [Authorize(Roles = "HR,Student,Admin")]
@@ -89,7 +89,7 @@ namespace MVC_PROJECT.Controllers
             std.SelectedListIds = unitOfWork.Students.GetSelectedIds(student);
             std.Courses = await unitOfWork.Courses.GetAllAsync();
             std.Departments = await unitOfWork.Departments.GetAllAsync();
-            return View(std);
+            return View("EditStudent", std);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -97,7 +97,7 @@ namespace MVC_PROJECT.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(student);
+                return View("EditStudent",student);
             }
             var user = await unitOfWork.UserManager.FindByEmailAsync(student.Email);
             if (user == null) return NotFound();

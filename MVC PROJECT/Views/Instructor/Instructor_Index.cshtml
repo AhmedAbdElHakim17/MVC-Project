@@ -57,14 +57,9 @@
                     <th>Hiring Date</th>
                     <th>Department</th>
                     <th>Image</th>
-                    @if (User.IsInRole("Admin"))
-                    {
-                        <th>Details</th>
-                    }
                     @if (User.IsInRole("HR") || User.IsInRole("Admin"))
                     {
-                        <th>Edit</th>
-                        <th>Delete</th>
+                        <th colspan="3">Actions</th>
                     }
                 </tr>
             </thead>

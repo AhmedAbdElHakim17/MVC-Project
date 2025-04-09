@@ -27,13 +27,13 @@ namespace MVC_PROJECT.Controllers
             return View("Role_Index", roles);
         }
         [HttpGet]
-        public IActionResult Add()
+        public IActionResult AddRole()
         {
-            return View();
+            return View("AddRole");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(RoleViewModel roleViewModel)
+        public async Task<IActionResult> AddRole(RoleViewModel roleViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -43,19 +43,15 @@ namespace MVC_PROJECT.Controllers
                 if (result.Succeeded)
                 {
                     ViewBag.success = true;
-                    return View(nameof(Add));
+                    return View("Role_Index");
                 }
                 foreach (var item in result.Errors)
                 {
                     ModelState.AddModelError("", item.Description);
                 }
             }
-            return View(roleViewModel);
+            return View("AddRole",roleViewModel);
 
-        }
-        public List<IdentityRole> GetAll()
-        {
-            return roleManager.Roles.ToList();
         }
     }
 }

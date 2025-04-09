@@ -48,12 +48,7 @@
                             <a class="nav-link " asp-area="" asp-controller="Student" asp-action="Index">Students</a>
                         </li>
                     }
-                    @if (User.IsInRole("Admin") || User.IsInRole("Instructor"))
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link " asp-area="" asp-controller="Course" asp-action="Index">Courses</a>
-                        </li>
-                    }
+                    
                     @if (User.IsInRole("Student") || User.IsInRole("Instructor"))
                     {
                         string role = User.IsInRole("Student") ? "Student" : "Instructor";
@@ -66,6 +61,12 @@
                                 <a class="nav-link " asp-controller=@role asp-action="Edit">MyCourses</a>
                             </li>
                         }
+                    }
+                    @if (User.IsInRole("Admin") || User.IsInRole("Instructor"))
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link " asp-area="" asp-controller="Course" asp-action="Index">Courses</a>
+                        </li>
                     }
                     @if (!User.Identity.IsAuthenticated)
                     {

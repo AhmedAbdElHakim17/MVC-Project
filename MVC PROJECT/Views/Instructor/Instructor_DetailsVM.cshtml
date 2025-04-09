@@ -69,9 +69,9 @@
 
             <!-- Back Button -->
             <div class="text-center mt-4">
-                <a asp-action=@((Model.Id != 0) ? "Index" : "") asp-controller=@((Model.Id != 0) ? "Instructor" : "Home")
+                <a asp-action="Index" asp-controller=@(!User.IsInRole("Instructor") ? "Instructor" : "Home")
                    class="btn btn-outline-primary px-4 py-2 fw-bold shadow-lg">
-                    <i class="fas fa-arrow-left"></i> @(Model.Id != 0 ? "Back To Index" : "Back To Home")
+                    <i class="fas fa-arrow-left"></i> @(!User.IsInRole("Instructor") ? "Back To Index" : "Back To Home")
                 </a>
             </div>
         </div>

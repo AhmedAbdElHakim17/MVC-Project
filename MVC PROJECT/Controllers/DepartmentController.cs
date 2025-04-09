@@ -27,7 +27,7 @@ namespace MVC_PROJECT.Controllers
             //    Description = d.Description,
             //    Location = d.Location,
             //});
-            return View(deptVMs);
+            return View("Department_Index", deptVMs);
         }
         public async Task<IActionResult> DetailsVM(int id)
         {
@@ -41,13 +41,13 @@ namespace MVC_PROJECT.Controllers
             //    Description = dept.Description,
             //    Location = dept.Location,
             //};
-            return View(deptModel);
+            return View("Department_DetailsVM",deptModel);
         }
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public IActionResult Add()
         {
-            return View();
+            return View("AddDepartment");
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -67,7 +67,7 @@ namespace MVC_PROJECT.Controllers
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
             }
-            return View();
+            return View("AddDepartment");
         }
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
@@ -82,7 +82,7 @@ namespace MVC_PROJECT.Controllers
             //    Description = dept.Description,
             //    Location = dept.Location,
             //};
-            return View(department);
+            return View("EditDepartment",department);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -102,14 +102,14 @@ namespace MVC_PROJECT.Controllers
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
             }
-            return View(dept);
+            return View("EditDepartment",dept);
         }
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var dept = await unitOfWork.Departments.GetByIdAsync(id);
             if (dept == null) return NotFound();
-            if (dept.InsList.Count > 0 || dept.StdList.Count > 0) return View(id); 
+            if (dept.InsList?.Count > 0 || dept.StdList?.Count > 0) return View(id); 
             unitOfWork.Departments.Delete(dept);
             await unitOfWork.CompleteAsync();
             return RedirectToAction("Index");

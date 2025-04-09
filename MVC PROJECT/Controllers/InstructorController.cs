@@ -18,7 +18,7 @@ namespace MVC_PROJECT.Controllers
         {
             var instuctors = await unitOfWork.Instructors.GetAllAsync([nameof(Instructor.Department), nameof(Instructor.Courses)]);
             var InsList = mapper.Map<List<InstructorViewModel>>(instuctors);
-            return View(InsList);
+            return View("Instructor_Index",InsList);
         }
         [HttpGet]
         [Authorize(Roles = "Admin")]
@@ -29,7 +29,7 @@ namespace MVC_PROJECT.Controllers
                 Courses = await unitOfWork.Courses.GetAllAsync(),
                 Departments = await unitOfWork.Departments.GetAllAsync()
             };
-            return View(insModel);
+            return View("AddInstructor", insModel);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -44,7 +44,7 @@ namespace MVC_PROJECT.Controllers
             }
             insVM.Departments = await unitOfWork.Departments.GetAllAsync();
             insVM.Courses = await unitOfWork.Courses.GetAllAsync();
-            return View(insVM);
+            return View("AddInstructor", insVM);
         }
         [HttpGet]
         [Authorize(Roles = "HR,Admin")]
@@ -54,7 +54,7 @@ namespace MVC_PROJECT.Controllers
             if (ins == null) return View("Error", new ErrorViewModel { RequestId = "This Instructor doesn't Exist, Please Try Again" });
             var insVM = mapper.Map<InstructorViewModel>(ins);
             insVM.Departments = await unitOfWork.Departments.GetAllAsync();
-            return View(insVM);
+            return View("EditInstructor", insVM);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -73,10 +73,8 @@ namespace MVC_PROJECT.Controllers
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
             }
-            //insVM.DeptName = (await unitOfWork.Departments.GetByIdAsync(insVM.DeptId))?.Name;
-            //insVM.Courses = await unitOfWork.Courses.GetAllAsync();
             insVM.Departments = await unitOfWork.Departments.GetAllAsync();
-            return View(insVM);
+            return View("EditInstructor", insVM);
         }
         [Authorize(Roles = "Admin,HR")]
         public async Task<IActionResult> Delete(int id)
@@ -84,7 +82,6 @@ namespace MVC_PROJECT.Controllers
             var ins = await unitOfWork.Instructors.FindAsync(i => i.Id == id, nameof(Instructor.Courses));
             if (ins == null) return View("Error", new ErrorViewModel { RequestId = "This Instructor doesn't Exist, Please Try Again" });
             var user = await unitOfWork.UserManager.FindByIdAsync(ins.UserId);
-            //if (ins.Courses.Count > 0) return 
             if (user != null)
                 await unitOfWork.UserManager.DeleteAsync(user);
             unitOfWork.Instructors.Delete(ins);
@@ -97,13 +94,13 @@ namespace MVC_PROJECT.Controllers
             var user = await unitOfWork.UserManager.GetUserAsync(User);
             if (user == null) return View("Error", new ErrorViewModel { RequestId = "This User doesn't Exist, Please Try Again" });
             var ins = id == 0 || User.IsInRole("Instructor") ?
-                await unitOfWork.Instructors.FindAsync(i => i.UserId == user.Id) : 
+                await unitOfWork.Instructors.FindAsync(i => i.UserId == user.Id, [nameof(Instructor.Department), nameof(Instructor.Courses)]) : 
                 await unitOfWork.Instructors.FindAsync(i => i.Id == id, [nameof(Instructor.Department), nameof(Instructor.Courses)]);
             if (ins != null)
             {
                 var insVM = mapper.Map<InstructorViewModel>(ins);
                 insVM.Departments = await unitOfWork.Departments.GetAllAsync();
-                return View(insVM);
+                return View("Instructor_DetailsVM", insVM);
             }
             return RedirectToAction("Index", "Home");
         }

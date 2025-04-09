@@ -1,0 +1,99 @@
+﻿@model AdminViewModel
+@{
+    Layout = "_WebLayout";
+    ViewData["Title"] = "Admin Dashboard";
+}
+<style>
+    .custom-table {
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    }
+
+        /* Header Styling */
+        .custom-table thead th {
+            background: sandybrown;
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            text-transform: uppercase;
+        }
+
+        /* Row Hover Effect */
+        .custom-table tbody tr:hover {
+            background: rgba(0, 123, 255, 0.15);
+            transition: 0.3s ease-in-out;
+        }
+
+        /* Alternating Row Colors */
+        .custom-table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .custom-table tbody tr:nth-child(odd) {
+            background: #e9ecef;
+        }
+
+    /* Button Styling */
+
+
+</style>
+<!-- Headline -->
+<div class="text-center fw-bold mb-4 mt-4" style="color:sandybrown">
+    <h2>
+        <i class="fas fa-users"></i> Users
+    </h2>
+</div>
+
+<!-- Users Table -->
+<div class="container">
+    <div class="table-responsive shadow-lg rounded">
+        <table class="custom-table table table-bordered table-hover text-center align-middle m-0" style="background: white; border-radius: 10px;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Salary</th>
+                    <th>Age</th>
+                    <th>Hiring Date</th>
+                    <th>Department</th>
+                    <th>Image</th>
+                    <th>Details</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @* @foreach (var instructor in Model) *@
+                @* { *@
+                @*     <tr class="fw-semibold"> *@
+                @*         <td>@instructor.fullName</td> *@
+                @*         <td>@instructor.Salary</td> *@
+                @*         <td>@instructor.Age</td> *@
+                @*         <td>@instructor.HiringDate?.ToShortDateString()</td> *@
+                @*         <td>@instructor.DeptName</td> *@
+                @*         <td><img class="rounded-circle shadow-sm" style="width:80px; height:80px; object-fit:cover;" src="/images/@instructor.ImageUrl" /></td> *@
+                @*         <partial name="_SharedButtons" model="instructor.Id" /> *@
+                @*     </tr> *@
+                @* } *@
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- New Instructor Button -->
+@if (!User.IsInRole("HR"))
+{
+    <div class="text-center mt-4">
+        <a class="btn btn-success btn-lg shadow" asp-action="Add">
+            <i class="fas fa-user-plus"></i> New Instructor
+        </a>
+    </div>
+}
+
+<!-- Custom Styles -->
+<style>
+    .table tbody tr:hover {
+        background: rgba(26, 188, 156, 0.2);
+        transition: 0.3s ease-in-out;
+    }
+</style>

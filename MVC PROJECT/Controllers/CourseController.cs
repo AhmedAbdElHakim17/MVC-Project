@@ -1,4 +1,6 @@
-﻿namespace MVC_PROJECT.Controllers
+﻿using AspNetCoreGeneratedDocument;
+
+namespace MVC_PROJECT.Controllers
 {
     public class CourseController : Controller
     {
@@ -23,10 +25,10 @@
                     Topic = item.Topic,
                     TotalDeg = item.TotalDeg,
                     minDeg = item.minDeg,
-                    InsName = item.Instructor.fName + " " + item.Instructor.lName
+                    InsName = item.Instructor?.fName + " " + item.Instructor?.lName
                 });
             }
-            return View(crsList);
+            return View("Course_Index",crsList);
         }
         public IActionResult SetSession()
         {
@@ -45,7 +47,7 @@
         }
         public async Task<IActionResult> DetailsVM(int id)
         {
-            Course course = await unitOfWork.Courses.GetByIdAsync(id);
+            var course = await unitOfWork.Courses.GetByIdAsync(id);
             if(course == null || course.InsID == null) return NotFound();
             var Instructor = await unitOfWork.Instructors.GetByIdAsync(course.InsID);
             if(Instructor == null) return NotFound();
@@ -59,7 +61,7 @@
                 InsName = Instructor.fullName,
                 insList = await unitOfWork.Instructors.GetAllAsync()
             };
-            return View(Crsmodel);
+            return View("Course_DetailsVM",Crsmodel);
         }
         [HttpGet]
         [Authorize(Roles = "Admin")]
@@ -69,7 +71,7 @@
             {
                 insList = await unitOfWork.Instructors.GetAllAsync()
             };
-            return View(crs);
+            return View("AddCourse",crs);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -91,13 +93,13 @@
                 return RedirectToAction("Index");
             }
             course.insList = await unitOfWork.Instructors.GetAllAsync();
-            return View(course);
+            return View("AddCourse",course);
         }
         [HttpGet]
         [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Edit(int id)
         {
-            Course course = await unitOfWork.Courses.GetByIdAsync(id);
+            var course = await unitOfWork.Courses.GetByIdAsync(id);
             if(course == null) return NotFound();
             var crsVM = new CourseViewModel()
             {
@@ -109,7 +111,7 @@
                 InsID = course.InsID,
                 insList = await unitOfWork.Instructors.GetAllAsync()
             };
-            return View(crsVM);
+            return View("EditCourse",crsVM);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -131,15 +133,15 @@
                 return RedirectToAction("Index");
             }
             ViewBag.InsList = await unitOfWork.Instructors.GetAllAsync();
-            return View(course);
+            return View("EditCourse", course);
         }
         [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Delete(int id)
         {
-            Course crs = await unitOfWork.Courses.GetByIdAsync(id);
-            if (crs != null)
+            var course = await unitOfWork.Courses.GetByIdAsync(id);
+            if (course != null)
             {
-                unitOfWork.Courses.Delete(crs);
+                unitOfWork.Courses.Delete(course);
                 await unitOfWork.CompleteAsync();
                 return RedirectToAction("Index");
             }

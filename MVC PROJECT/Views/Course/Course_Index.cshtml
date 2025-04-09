@@ -6,34 +6,34 @@
 
 <style>
     .custom-table {
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
     }
 
-        /* Header Styling */
-        .custom-table thead th {
-            background: #0dcaf0;
-            color: white;
-            font-weight: bold;
-            padding: 12px;
-            text-transform: uppercase;
-        }
+    /* Header Styling */
+    .custom-table thead th {
+    background: #0dcaf0;
+    color: white;
+    font-weight: bold;
+    padding: 12px;
+    text-transform: uppercase;
+    }
 
-        /* Row Hover Effect */
-        .custom-table tbody tr:hover {
-            background: rgba(0, 123, 255, 0.15);
-            transition: 0.3s ease-in-out;
-        }
+    /* Row Hover Effect */
+    .custom-table tbody tr:hover {
+    background: rgba(0, 123, 255, 0.15);
+    transition: 0.3s ease-in-out;
+    }
 
-        /* Alternating Row Colors */
-        .custom-table tbody tr:nth-child(even) {
-            background: #f8f9fa;
-        }
+    /* Alternating Row Colors */
+    .custom-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
+    }
 
-        .custom-table tbody tr:nth-child(odd) {
-            background: #e9ecef;
-        }
+    .custom-table tbody tr:nth-child(odd) {
+    background: #e9ecef;
+    }
 
     /* Button Styling */
 
@@ -54,12 +54,7 @@
                 <th>Instructor Name</th>
                 @if (User.IsInRole("Admin"))
                 {
-                    @if (User.IsInRole("Admin") || User.IsInRole("Instructor"))
-                    {
-                        <th>Details</th>
-                    }
-                     <th>Edit</th>  
-                    <th>Delete</th>
+                    <th colspan="3">Actions</th>
                 }
             </tr>
         </thead>

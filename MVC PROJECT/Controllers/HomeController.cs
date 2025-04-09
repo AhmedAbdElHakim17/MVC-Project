@@ -23,7 +23,7 @@ public class HomeController : Controller
             Users = unitOfWork.UserManager.Users.ToList(),
             //Roles = unitOfWork
         };
-        return View(model);
+        return View("Home_Index",model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
